@@ -61,21 +61,32 @@ def ConvertLibaryToKmerSets(library, K=2):
     new_lib = {}
     c = 0
     for k in library.keys():
-        new_lib[k] = set()
+        new_lib[k] = []
         # add your code here to build the k-mer set
 
         i_step = 0
         for kmer_i in range (len(library[k])//K):
           m.update((library[k][i_step:i_step + K]).encode('utf-8'))
-          new_lib[k].add(m.digest())
+          new_lib[k].append(m.digest())
           i_step += 1
         
     return new_lib
 
 
 def JaccardIndex(s1, s2):
-    numerator = float(len(s1.intersection(s2)))
-    denominator = float(len(s1.union(s2)))
+    print("s1, s2", len(s1), len(s2))
+    s1_set = set()
+    s2_set = set()
+
+    if (len(s1) == len(s2)):
+      s1_set = set(s1)
+      s2_set = set(s2)
+
+      numerator = float(len(s1_set.intersection(s2_set)))
+      denominator = float(len(s1_set.union(s2_set)))
+
+      return numerator/denominator
+    
     best_JI = -1
 
     if (len(s1) > len(s2)):
@@ -88,12 +99,9 @@ def JaccardIndex(s1, s2):
     elif (len(s1) < len(s2)):
       start_offset = 0
       while(start_offset + len(s1) < len(s2)):
-        this_JI = JaccardIndex(s1, s1[start_offset:start_offset + len(s1)])
+        this_JI = JaccardIndex(s1, s2[start_offset:start_offset + len(s1)])
         start_offset += 1
         if (this_JI > best_JI): best_JI = this_JI
-
-    if best_JI == -1:
-      return numerator/denominator
 
     return best_JI
 
@@ -162,7 +170,11 @@ if __name__ == "__main__":
    
    kmer_16s_sequences = ConvertLibaryToKmerSets(sequences_16s, K=6)
    kmer_sample_sequences = ConvertLibaryToKmerSets(sample_sequences, K=6)
-   k1 = 'RS_GCF_000158815.1~NZ_GG657738.1-#2 d__Bacteria;p__Actinobacteriota;c__Actinobacteria;o__Corynebacteriales;f__Micromonosporaceae;g__Micromonospora;s__ 272 6798591'
-   k2 = 'C1_0'
-   print (JaccardIndex(kmer_sample_sequences[k2],kmer_16s_sequences[k1]))
+#    k1 = 'RS_GCF_000158815.1~NZ_GG657738.1-#2 d__Bacteria;p__Actinobacteriota;c__Actinobacteria;o__Corynebacteriales;f__Micromonosporaceae;g__Micromonospora;s__ 272 6798591'
+#    k2 = 'C1_0'
+#    print ()
+
+   for a16skey in kmer_16s_sequences.keys():
+       for asamplekey in kmer_sample_sequences.keys():
+           print(JaccardIndex(kmer_sample_sequences[asamplekey],kmer_16s_sequences[a16skey]))
 
