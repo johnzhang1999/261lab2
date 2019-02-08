@@ -35,10 +35,13 @@ def Load16SFastA(path, fraction = 1.0):
     for line in infile:
         if ">" in line:
             my_id = line[1:-1]
+            if my_id == 'RS_GCF_000158815.1~NZ_GG657738.1-#2 d__Bacteria;p__Actinobacteriota;c__Actinobacteria;o__Corynebacteriales;f__Micromonosporaceae;g__Micromonospora;s__ 272 6798591':
+                sequences_16s[my_id] = ""
+            if my_id == 'C1_0':
+                sequences_16s[my_id] = ""
             if random.random() < fraction:
                 sequences_16s[my_id] = ""
-            
-            
+              
         else:
             if my_id in sequences_16s:
                 sequences_16s[my_id] += line[:-1]
@@ -52,22 +55,47 @@ def ConvertLibaryToKmerSets(library, K=2):
     import hashlib
     # use the hashlib function to generate unique values to store for each k-mer
     
-    #m = hashlib.md5()
+    m = hashlib.md5()
     #m.update('TEST'.encode('utf-8'))
     #m.digest() -> returns the hashed value of the updated input
     new_lib = {}
     c = 0
     for k in library.keys():
         new_lib[k] = set()
-        
         # add your code here to build the k-mer set
+
+        i_step = 0
+        for kmer_i in range (len(library[k])//K):
+          m.update((library[k][i_step:i_step + K]).encode('utf-8'))
+          new_lib[k].add(m.digest())
+          i_step += 1
         
     return new_lib
+
 
 def JaccardIndex(s1, s2):
     numerator = float(len(s1.intersection(s2)))
     denominator = float(len(s1.union(s2)))
-    return numerator/denominator
+    best_JI = -1
+
+    if (len(s1) > len(s2)):
+      start_offset = 0
+      while(start_offset + len(s2) < len(s1)):
+        this_JI = JaccardIndex(s2, s1[start_offset:start_offset + len(s2)])
+        start_offset += 1
+        if (this_JI > best_JI): best_JI = this_JI
+
+    elif (len(s1) < len(s2)):
+      start_offset = 0
+      while(start_offset + len(s1) < len(s2)):
+        this_JI = JaccardIndex(s1, s1[start_offset:start_offset + len(s1)])
+        start_offset += 1
+        if (this_JI > best_JI): best_JI = this_JI
+
+    if best_JI == -1:
+      return numerator/denominator
+
+    return best_JI
 
 def KmerMatch(sequence_kmer_set, library_kmer_set):
     best_score = 0.0
@@ -83,8 +111,14 @@ def AlignmentMatch(sequence, library):
     best_match = None
     
     #add your code here to find the best match using alignment
+    for item in library:
+      (score, optloc, A) = alignment.local_align(item, sequence)
+      if score > best_score:
+        best_score = score
+        best_match = item
     
     return best_score, best_match
+
 if __name__ == "__main__":
    # stuff only to run when not called via 'import' here
    
@@ -96,7 +130,7 @@ if __name__ == "__main__":
    
    location_dict['S8'] = ("Point-Mon", 1)
    location_dict['S9'] = ("Point-Mon", 2)
-   location_dict['S10'] = ("Point-Mon", 3)
+   location_dict['S11'] = ("Point-Mon", 3)
    
    location_dict['S2'] = ("Point-Allegheny", 1)
    location_dict['S3'] = ("Point-Allegheny", 2)
@@ -116,13 +150,19 @@ if __name__ == "__main__":
    location_dict['S7'] = ("Neville Island", 3)
    
    fn = "bacterial_16s_genes.fa"
-   sequences_16s = Load16SFastA(fn, fraction = 1.0)
+   sequences_16s = Load16SFastA(fn, fraction = 0.05)
+   
    fn = "Fall2018CleanReads.fa"
-   sample_sequences = Load16SFastA(fn, fraction = 1.0)
+   sample_sequences = Load16SFastA(fn, fraction = 0.05)
+
+
    
    print ("Loaded %d 16s sequences." % len(sequences_16s))
    print ("Loaded %d sample sequences." % len(sample_sequences))
    
    kmer_16s_sequences = ConvertLibaryToKmerSets(sequences_16s, K=6)
    kmer_sample_sequences = ConvertLibaryToKmerSets(sample_sequences, K=6)
-   
+   k1 = 'RS_GCF_000158815.1~NZ_GG657738.1-#2 d__Bacteria;p__Actinobacteriota;c__Actinobacteria;o__Corynebacteriales;f__Micromonosporaceae;g__Micromonospora;s__ 272 6798591'
+   k2 = 'C1_0'
+   print (JaccardIndex(kmer_sample_sequences[k2],kmer_16s_sequences[k1]))
+
