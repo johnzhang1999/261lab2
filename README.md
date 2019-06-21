@@ -8,16 +8,18 @@ Water samples were collected at six different locations (including pure water as
 
 The sequence reads are available in `data/Fall2018CleanReads.fa`. DNA reads quality control data and reports are available in `dna_quality_control/`. 
 
+![DNA Quality Control](https://github.com/johnzhang1999/microbiome/blob/master/dna_quality_control/QC_plot.png?raw=true)
+
 We also used `bacterial_16s_genes.fa`, which contains bacterial 16s genes as the database that we search against.
 
 ## Usage
-Simply run `microbiome_test.py` and bacterial phylum plots will be generated in the `fraction_plots/' directory with our pre-tuned parameters for k-mer search ([see details here](https://en.wikipedia.org/wiki/K-mer)).
+Simply run `microbiome_test.py` and bacterial phylum plots will be generated in the `fraction_plots/' directory with our pre-tuned parameters (K=8, thresh=.6 -> Acc 0.973) for k-mer search ([see details here](https://en.wikipedia.org/wiki/K-mer)).
 
-![Phylum Fractions at Neville Island Sample Point]()
+![Phylum Fractions at Neville Island Sample Point](https://github.com/johnzhang1999/microbiome/blob/master/fraction_plots/Neville%20Island.png?raw=true)
 
 An analysis report on parameter search has been provided in `kmer_size_acc_reports/` with accuracy data included. 
 
-![Optimal: K=8, thresh=.6 -> Acc 0.973]()
+![Optimal: K=8, thresh=.6 -> Acc 0.973](https://github.com/johnzhang1999/microbiome/blob/master/kmer_size_acc_reports/optim.png?raw=true)
 
 We have run a full alignment (consult `alignment.py` for its implementation details) on the DNA reads against the s16 database on Google Cloud and the result is saved in `data/*.txt`. Runtime generated calculations have been saved in `cache/*.pickle`. You may perform further analysis on these.
 
@@ -27,5 +29,6 @@ Anupam Pokharel and Dr. Kangas
 
 ## License & Rules
 [MIT](https://choosealicense.com/licenses/mit/)
+
 [CMU Academic Policies](https://www.cmu.edu/policies/student-and-student-life/academic-integrity.html)
 
