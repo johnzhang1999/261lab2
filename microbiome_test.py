@@ -126,7 +126,7 @@ def AlignmentMatch(sequence, library):
     return best_score, best_match
 
 def generateTruth(lib, sample):
-    align_score_file = open("./align_scores.txt", "w")
+    align_score_file = open("./data/align_scores.txt", "w")
     counter = 0
     itemList = sample.items()
     sampleLen = len(itemList)
@@ -139,8 +139,8 @@ def generateTruth(lib, sample):
     align_score_file.close()
 
 def processTruth(sample):
-	f = open('./truth_percents.txt', 'w')
-	with open('./align_scores.txt', 'r') as file:
+	f = open('./data/truth_percents.txt', 'w')
+	with open('./data/align_scores.txt', 'r') as file:
 		for line in file:
 			s = line.strip().split('\t')
 			samp = s[0]
@@ -162,8 +162,8 @@ def convertTruthsToDict (filepath): #alignment scores dictionary
 	return result
 
 def processTruthAbove90():
-	f = open('./truth_percents_good.txt', 'w')
-	with open('./truth_percents.txt', 'r') as file:
+	f = open('./data/truth_percents_good.txt', 'w')
+	with open('./data/truth_percents.txt', 'r') as file:
 		for line in file:
 			s = line.strip().split('\t')
 			score = s[1]
@@ -208,7 +208,7 @@ def runAssessment (sequences_16s, sample_sequences, K):
     # uncomment the below two lines to generate truth (WARNING: runs extremely slow)
 	# generateTruth(sequences_16s, sample_sequences)
 	# processTruth(sample_sequences)
-	filepath = './truth_percents.txt'
+	filepath = './data/truth_percents.txt'
 	keys = ExtractKeys(filepath)
 
 	align_socre_dict = convertTruthsToDict(filepath)
@@ -325,10 +325,10 @@ if __name__ == "__main__":
     location_dict['S6'] = ("Neville Island", 2)
     location_dict['S7'] = ("Neville Island", 3)
 
-    fn = "bacterial_16s_genes.fa"
+    fn = "data/bacterial_16s_genes.fa"
     sequences_16s = Load16SFastA(fn, fraction=0.05)
 
-    fn = "Fall2018CleanReads.fa"
+    fn = "data/Fall2018CleanReads.fa"
     sample_sequences = Load16SFastA(fn, fraction=0.01)
 
     # uncomment the below two lines to run K and K-mer threshold assessments.
@@ -337,12 +337,12 @@ if __name__ == "__main__":
 
     result, unmatched = calcMixFrac(sequences_16s, sample_sequences, 8, 0.6)
 
-    write('matched_result.pickle', result)
-    write('unmatched.pickle', unmatched)
+    write('cache/matched_result.pickle', result)
+    write('cache/unmatched.pickle', unmatched)
 
     merged = mergeLoc(result, location_dict)
 
-    write('matched_merged.pickle', merged)
+    write('cache/matched_merged.pickle', merged)
 
     for loc, phylum_count_dict in merged.items():
         path = loc + '.png'
