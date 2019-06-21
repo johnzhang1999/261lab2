@@ -13,7 +13,7 @@ The sequence reads are available in `data/Fall2018CleanReads.fa`. DNA reads qual
 We also used `bacterial_16s_genes.fa`, which contains bacterial 16s genes as the database that we search against.
 
 ## Usage
-Simply run `microbiome_test.py` and bacterial phylum plots will be generated in the `fraction_plots/' directory with our pre-tuned parameters (K=8, thresh=.6 -> Acc 0.973) for k-mer search ([see details here](https://en.wikipedia.org/wiki/K-mer)).
+Simply run `microbiome_test.py` and bacterial phylum plots will be generated in the `fraction_plots/` directory with our pre-tuned parameters (K=8, thresh=.6 -> Acc 0.973) for k-mer search ([see details here](https://en.wikipedia.org/wiki/K-mer)).
 
 ![Phylum Fractions at Neville Island Sample Point](https://github.com/johnzhang1999/microbiome/blob/master/fraction_plots/Neville%20Island.png?raw=true)
 
